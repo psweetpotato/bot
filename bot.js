@@ -45,7 +45,7 @@ function getTypos(){
 							tempWord = tempWord.replaceAt((i + 1), tempChar);
 							typos.push(tempWord);
 						} else if((i + 1) === length){
-							retweetLatest();
+							retweetTypo();
 						}
 				}
 }
@@ -63,7 +63,7 @@ function getMoreTypos(){
 			keyboard[word[i]].forEach(function(character) {
 				typos.push(tempWord.replaceAt(i, character).trim());
 			});
-			retweetLatest();
+			retweetTypo();
 		} else if (keyboard[word[i]]) {
 				var tempWord = word;
 				keyboard[word[i]].forEach(function(character) {
@@ -73,7 +73,7 @@ function getMoreTypos(){
 	}
 }
 
-function retweetLatest() {
+function retweetTypo() {
 	//pick a random typo from the array
 	var typo = typos[Math.floor(Math.random()*typos.length)];
 	T.get('search/tweets', {q: typo, count: 1, result_type: "recent", lang: "en"}, function (error, data) {
@@ -97,4 +97,4 @@ function retweetLatest() {
 	});
 }
 
-// setInterval(retweetLatest, 1000 * 60 * 60);
+// setInterval(retweetTypo, 1000 * 60 * 60);
