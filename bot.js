@@ -52,7 +52,6 @@ function getTypos(){
 
 function getMoreTypos(){
 	var keyboard = {"1":["2","q"],"2":["1","q","w","3"],"3":["2","w","e","4"],"4":["3","e","r","5"],"5":["4","r","t","6"],"6":["5","t","y","7"],"7":["6","y","u","8"],"8":["7","u","i","9"],"9":["8","i","o","0"],"0":["9","o","p","-"],"-":["0","p"],"q":["1","2","w","a"],"w":["q","a","s","e","3","2"],"e":["w","s","d","r","4","3"],"r":["e","d","f","t","5","4"],"t":["r","f","g","y","6","5"],"y":["t","g","h","u","7","6"],"u":["y","h","j","i","8","7"],"i":["u","j","k","o","9","8"],"o":["i","k","l","p","0","9"],"p":["o","l","-","0"],"a":["z","s","w","q"],"s":["a","z","x","d","e","w"],"d":["s","x","c","f","r","e"],"f":["d","c","v","g","t","r"],"g":["f","v","b","h","y","t"],"h":["g","b","n","j","u","y"],"j":["h","n","m","k","i","u"],"k":["j","m","l","o","i"],"l":["k","p","o"],"z":["x","s","a"],"x":["z","c","d","s"],"c":["x","v","f","d"],"v":["c","b","g","f"],"b":["v","n","h","g"],"n":["b","m","j","h"],"m":["n","k","j"]};
-	//pick a random trend from the list
 	var rTrend = trends[Math.floor(Math.random()*trends.length)];
 	console.log(rTrend);
 	var word = rTrend.toLocaleLowerCase(),
@@ -76,12 +75,19 @@ function getMoreTypos(){
 function retweetTypo() {
 	//pick a random typo from the array
 	var typo = typos[Math.floor(Math.random()*typos.length)];
-	T.get('search/tweets', {q: typo, count: 1, result_type: "recent", lang: "en"}, function (error, data) {
-	  console.log(error, data);
+	console.log(typo)
+	T.get('search/tweets', {q: typo, count: 100, result_type: "mixed", lang: "en"}, function (error, data) {
+	  // console.log(error, data.statuses);
 	  // If it finds a match...
-	  if (data.statuses[0]) {
+	  if (data.statuses.length >=2 || data.statuses.length === 0) {
+			console.log(data.statuses.length + " length")
+			typos=[];
+			getMoreTypos();
+		} else {
 			var retweetId = data.statuses[0].id_str;
+			console.log(data.statuses.length)
 			//retweet that one
+			console.log(data.statuses[0])
 			T.post('statuses/retweet/' + retweetId, { }, function (error, response) {
 				if (response) {
 					console.log('Success! Check your bot, it should have retweeted something.')
@@ -90,10 +96,8 @@ function retweetTypo() {
 				}
 			})
 			//no matches? try again with different typos
-	  } else {
-			typos=[];
-			getMoreTypos();
-		}
+	  }
+
 	});
 }
 
