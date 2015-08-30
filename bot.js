@@ -76,16 +76,16 @@ function retweetTypo() {
 	//pick a random typo from the array
 	var typo = typos[Math.floor(Math.random()*typos.length)];
 	console.log(typo)
-	T.get('search/tweets', {q: typo, count: 100, result_type: "mixed", lang: "en"}, function (error, data) {
+	T.get('search/tweets', {q: typo, count: 5, result_type: "mixed", lang: "en"}, function (error, data) {
 	  // console.log(error, data.statuses);
 	  // If it finds a match...
 	  if (data.statuses.length >=2 || data.statuses.length === 0) {
+			//too many matches or no matches? try again with different typos
 			console.log(data.statuses.length + " length")
 			typos=[];
 			getMoreTypos();
 		} else {
 			var retweetId = data.statuses[0].id_str;
-			console.log(data.statuses.length)
 			//retweet that one
 			console.log(data.statuses[0])
 			T.post('statuses/retweet/' + retweetId, { }, function (error, response) {
@@ -95,7 +95,6 @@ function retweetTypo() {
 					console.log('There was an error with Twitter:', error);
 				}
 			})
-			//no matches? try again with different typos
 	  }
 
 	});
