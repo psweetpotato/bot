@@ -11,11 +11,11 @@ String.prototype.replaceAt = function(index, char) {
 	return this.substr(0, index) + char + this.substr(index+char.length);
 };
 
-(function getTrendingTags(){
+var getTrendingTags = (function() {
 	//get trends for the nyc area
 	T.get('trends/place', nycId , function (error, data) {
 		if (!error){
-			for (var i = 0; i <10; i++){
+			for (var i = 0; i < 10; i++){
 				console.log(data[0].trends[i].name)
 				// make sure its a hashtag (phrases are more likely to return a tweet that wasn't actually a typo)
 				if (data[0].trends[i].name[0] === '#'){
@@ -79,9 +79,11 @@ function retweetTypo() {
 	T.get('search/tweets', {q: typo, count: 5, result_type: "mixed", lang: "en"}, function (error, data) {
 	  // console.log(error, data.statuses);
 	  // If it finds a match...
-	  if (data.statuses.length >=2 || data.statuses.length === 0) {
+		if (error){
+			console.log(error)
+		}	else if (data.statuses.length >=2 || data.statuses.length === 0) {
 			//too many matches or no matches? try again with different typos
-			console.log(data.statuses.length + " length")
+			console.log(data.statuses.length + " found")
 			typos=[];
 			getMoreTypos();
 		} else {
@@ -99,5 +101,5 @@ function retweetTypo() {
 
 	});
 }
-
-// setInterval(retweetTypo, 1000 * 60 * 60);
+var tweetTimer = setInterval(retweetTypo, 1000 * 60 * 60);
+// var trendsTimer = setInterval(getTrendingTags, 86400000);
